@@ -42,7 +42,7 @@ angular.module('starter').controller('MapController',
               }
             ),
             minZoom: 8,
-            maxZoom: 14,
+            maxZoom: 13,
             zoomControlPosition: 'bottomleft'
           },
           center: {
