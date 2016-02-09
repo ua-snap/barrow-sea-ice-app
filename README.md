@@ -10,7 +10,7 @@ http://ionic-leafletjs-map-demo.divshot.io/#/app/map
 - Ensure Ionic CLI installed
 
 ```sh
-ionic start myMapDemo https://github.com/calendee/ionic-leafletjs-map-demo
+ionic start myMapDemo https://github.com/ua-snap/ionic-leafletjs-map-demo
 cd myMapDemo
 cordova plugin add cordova-plugin-geolocation
 ionic platform add ios
