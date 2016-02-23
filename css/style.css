@@ -18,3 +18,11 @@ body {
 .tabs.border-top {
   border-top: 1px solid #ddd !important;
 }
+
+.platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) > * {
+  margin-top: 1px;
+}
+
+.platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) > .title {
+  margin-top: 11px;
+}
