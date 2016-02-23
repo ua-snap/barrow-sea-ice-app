@@ -12,16 +12,75 @@ angular.module('starter').controller('MapController',
       LocationsService
       ) {
 
-      $scope.$on("$stateChangeSuccess", function() {
-        var epsg4326_ll = [-157.237324185, 71.1479777401];
-        var epsg4326_ur = [-156.339008901, 71.4361019042];
-        var epsg3857_ll = proj4('EPSG:3857', epsg4326_ll);
-        var epsg3857_ur = proj4('EPSG:3857', epsg4326_ur);
+      var epsg4326_ll = [-157.237324185, 71.1479777401];
+      var epsg4326_ur = [-156.339008901, 71.4361019042];
+      var epsg3857_ll = proj4('EPSG:3857', epsg4326_ll);
+      var epsg3857_ur = proj4('EPSG:3857', epsg4326_ur);
+      var url = 'http://geonode-test.iarc.uaf.edu/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=geonode%3Abarrow_epsg3857&tiled=true&WIDTH=1100&HEIGHT=1100&CRS=EPSG%3A3857&STYLES=&BBOX=' + epsg3857_ll[0] + ',' + epsg3857_ll[1] + ',' + epsg3857_ur[0] + ',' + epsg3857_ur[1];
+      var overlayPath;
 
+      var deviceReadyPromise = new Promise(function(resolve, reject){
+          document.addEventListener("deviceready", resolve, false);
+      });
+
+      var mapLoadPromise = new Promise(function(resolve, reject){
+          $scope.$on('maploaded', resolve);
+      });
+
+      Promise.all([deviceReadyPromise, mapLoadPromise]).then(function(){
+        var ft = new FileTransfer();
+
+        $scope.redownload = function() {
+          delete $scope.map.layers.overlays.seaice;
+          window.resolveLocalFileSystemURL(overlayPath, function(entry) {
+            entry.remove(downloadOverlay, function(error) {
+              console.log('Error removing overlay file.');
+              console.log(error);
+            });
+          });
+        }
+
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSystem) {
+          overlayPath = fileSystem.root.toURL() + 'testImage.png';
+          window.resolveLocalFileSystemURL(overlayPath, function(entry) {
+              addOverlay(entry.toURL());
+            }, function() {
+              downloadOverlay();
+          });
+        });
+
+        function downloadOverlay() {
+          ft.download(url, overlayPath, function(entry) {
+            addOverlay(entry.toURL());
+          }, function(error) {
+            console.log('Download error: ' + error.source);
+            console.log('Download error: ' + error.target);
+            console.log('Download error: ' + error.code);
+          })
+        }
+
+        function addOverlay(filePath) {
+          $scope.map.layers.overlays = {
+            seaice: {
+              name: 'Sea Ice',
+              type: 'imageOverlay',
+              url: filePath,
+              bounds: [[epsg4326_ll[1], epsg4326_ll[0]], [epsg4326_ur[1], epsg4326_ur[0]]],
+              layerParams: {
+                showOnSelector: true,
+                continuousWorld: true
+              }
+            }
+          };
+          $scope.$apply();
+        }
+      });
+
+      $scope.$on("$stateChangeSuccess", function() {
         $scope.map = {
           defaults: {
             minZoom: 9,
-            maxZoom: 14,
+            maxZoom: 13,
             zoomControlPosition: 'bottomleft'
           },
           center: {
@@ -51,25 +110,13 @@ angular.module('starter').controller('MapController',
               bdl: {
                 name: 'BDL',
                 type: 'imageOverlay',
-                url: 'http://wms.alaskamapped.org/bdl?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=BestDataAvailableLayer&tiled=true&WIDTH=3000&HEIGHT=3000&CRS=EPSG%3A3857&STYLES=&BBOX=' + epsg3857_ll[0] + ',' + epsg3857_ll[1] + ',' + epsg3857_ur[0] + ',' + epsg3857_ur[1],
+                url: 'images/bdl.png',
                 bounds: [[epsg4326_ll[1], epsg4326_ll[0]], [epsg4326_ur[1], epsg4326_ur[0]]],
                 layerParams: {
                   showOnSelector: false,
                   continuousWorld: true
                 }
               },
-            },
-            overlays: {
-              barrow: {
-                name: 'Barrow',
-                type: 'imageOverlay',
-                url: 'http://geonode-test.iarc.uaf.edu/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=geonode%3Abarrow_epsg3857&tiled=true&WIDTH=1100&HEIGHT=1100&CRS=EPSG%3A3857&STYLES=&BBOX=' + epsg3857_ll[0] + ',' + epsg3857_ll[1] + ',' + epsg3857_ur[0] + ',' + epsg3857_ur[1],
-                bounds: [[epsg4326_ll[1], epsg4326_ll[0]], [epsg4326_ur[1], epsg4326_ur[0]]],
-                layerParams: {
-                  showOnSelector: true,
-                  continuousWorld: true
-                }
-              }
             }
           }
         };
@@ -81,6 +128,8 @@ angular.module('starter').controller('MapController',
           focus: true,
           draggable: false
         };
+
+        $scope.$emit('maploaded');
       });
 
       var Location = function() {
@@ -90,7 +139,6 @@ angular.module('starter').controller('MapController',
         this.name = "";
       };
 
-      // Place GPS coordinate on map.
       $scope.locate = function(){
         $cordovaGeolocation
           .getCurrentPosition()
@@ -106,10 +154,9 @@ angular.module('starter').controller('MapController',
               focus: true,
               draggable: false
             };
-          }, function(err) {
-            // error
-            console.log("Location error!");
-            console.log(err);
+          }, function(error) {
+            console.log("Error getting GPS coordinates.");
+            console.log(error);
           });
       };
     }]);
