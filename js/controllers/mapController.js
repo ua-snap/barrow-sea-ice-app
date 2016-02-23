@@ -40,7 +40,7 @@ angular.module('starter').controller('MapController', ['$scope',
       }
 
       window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSystem) {
-        overlayPath = fileSystem.root.toURL() + 'testImage.png';
+        overlayPath = fileSystem.root.toURL() + 'overlay.png';
         window.resolveLocalFileSystemURL(overlayPath, function(entry) {
             addOverlay(entry.toURL());
           }, function() {
