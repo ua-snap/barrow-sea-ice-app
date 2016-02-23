@@ -2,13 +2,11 @@ angular.module('starter').controller('MapController', ['$scope',
   '$cordovaGeolocation',
   '$stateParams',
   '$ionicModal',
-  'LocationsService',
   function(
     $scope,
     $cordovaGeolocation,
     $stateParams,
-    $ionicModal,
-    LocationsService
+    $ionicModal
     ) {
 
     var epsg4326_ll = [-157.237324185, 71.1479777401];
