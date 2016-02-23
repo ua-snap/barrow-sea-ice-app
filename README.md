@@ -12,7 +12,7 @@ http://ionic-leafletjs-map-demo.divshot.io/#/app/map
 ```sh
 ionic start myMapDemo https://github.com/ua-snap/ionic-leafletjs-map-demo
 cd myMapDemo
-cordova plugin add cordova-plugin-geolocation
+cordova plugin add cordova-plugin-geolocation cordova-plugin-file-transfer
 bower install proj4leaflet angular-leaflet-directive
 ionic platform add ios
 ionic platform add android
