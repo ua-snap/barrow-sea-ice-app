@@ -61,6 +61,7 @@ angular.module('starter').controller('MapController', ['$scope',
           seaice: {
             name: 'Sea Ice',
             type: 'imageOverlay',
+            visible: true,
             url: filePath,
             bounds: [[epsg4326_ll[1], epsg4326_ll[0]], [epsg4326_ur[1], epsg4326_ur[0]]],
             layerParams: {
