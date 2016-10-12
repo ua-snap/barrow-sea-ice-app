@@ -13,7 +13,7 @@ angular.module('starter').controller('MapController', ['$scope',
     var epsg4326_ur = [-156.339008901, 71.4361019042];
     var epsg3857_ll = proj4('EPSG:3857', epsg4326_ll);
     var epsg3857_ur = proj4('EPSG:3857', epsg4326_ur);
-    var url = 'http://geonode-test.iarc.uaf.edu/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=geonode%3Abarrow_epsg3857&tiled=true&WIDTH=1100&HEIGHT=1100&CRS=EPSG%3A3857&STYLES=&BBOX=' + epsg3857_ll[0] + ',' + epsg3857_ll[1] + ',' + epsg3857_ur[0] + ',' + epsg3857_ur[1];
+    var url = 'http://mapventure.iarc.uaf.edu:8080/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=geonode%3Abarrow_sea_ice_radar&tiled=true&WIDTH=1100&HEIGHT=1100&CRS=EPSG%3A3857&STYLES=&BBOX=' + epsg3857_ll[0] + ',' + epsg3857_ll[1] + ',' + epsg3857_ur[0] + ',' + epsg3857_ur[1];
     var overlayPath;
 
     var deviceReadyPromise = new Promise(function(resolve, reject){
