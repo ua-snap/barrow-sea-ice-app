@@ -39,7 +39,10 @@ angular.module('starter').controller('MapController', ['$scope',
         delete $scope.map.layers.overlays.seaice;
         delete $scope.overlayDate;
         window.resolveLocalFileSystemURL(overlayPath, function(entry) {
-          entry.remove(downloadOverlay, function(error) {
+          entry.remove(function () {
+            window.localStorage.removeItem('overlayDate');
+            downloadOverlay();
+          }, function(error) {
             console.log('Error removing overlay file.');
             console.log(error);
           });
