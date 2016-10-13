@@ -28,7 +28,7 @@ body {
 }
 
 .bar.bar-light.overlay-date {
-  background-color: transparent;
+  background: transparent;
   border: none;
 }
 
@@ -37,6 +37,6 @@ body {
   color: #fff;
   font-weight: bold;
   text-shadow: 0px 0px 2px #000;
-  background-color: transparent;
+  background: transparent;
   border: none;
 }
