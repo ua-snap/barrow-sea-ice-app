@@ -1,10 +1,14 @@
 angular.module('starter').controller('MapController', ['$scope',
   '$cordovaGeolocation',
+  '$http',
+  '$timeout',
   '$stateParams',
   '$ionicModal',
   function(
     $scope,
     $cordovaGeolocation,
+    $http,
+    $timeout,
     $stateParams,
     $ionicModal
     ) {
@@ -13,8 +17,12 @@ angular.module('starter').controller('MapController', ['$scope',
     var epsg4326_ur = [-156.339008901, 71.4361019042];
     var epsg3857_ll = proj4('EPSG:3857', epsg4326_ll);
     var epsg3857_ur = proj4('EPSG:3857', epsg4326_ur);
-    var url = 'http://mapventure.iarc.uaf.edu:8080/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=geonode%3Abarrow_sea_ice_radar&tiled=true&WIDTH=1100&HEIGHT=1100&CRS=EPSG%3A3857&STYLES=&BBOX=' + epsg3857_ll[0] + ',' + epsg3857_ll[1] + ',' + epsg3857_ur[0] + ',' + epsg3857_ur[1];
+
+    var geoserverUrl = 'http://mapventure.iarc.uaf.edu:8080/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=geonode%3Abarrow_sea_ice_radar&tiled=true&WIDTH=1100&HEIGHT=1100&CRS=EPSG%3A3857&STYLES=&BBOX=' + epsg3857_ll[0] + ',' + epsg3857_ll[1] + ',' + epsg3857_ur[0] + ',' + epsg3857_ur[1];
+    var geonodeUrl = 'http://mapventure.iarc.uaf.edu:8000/api/layers/36/';
     var overlayPath;
+
+    $scope.overlayDate = window.localStorage.getItem('overlayDate');
 
     var deviceReadyPromise = new Promise(function(resolve, reject){
         document.addEventListener("deviceready", resolve, false);
@@ -29,6 +37,7 @@ angular.module('starter').controller('MapController', ['$scope',
 
       $scope.redownload = function() {
         delete $scope.map.layers.overlays.seaice;
+        delete $scope.overlayDate;
         window.resolveLocalFileSystemURL(overlayPath, function(entry) {
           entry.remove(downloadOverlay, function(error) {
             console.log('Error removing overlay file.');
@@ -47,7 +56,14 @@ angular.module('starter').controller('MapController', ['$scope',
       });
 
       function downloadOverlay() {
-        ft.download(url, overlayPath, function(entry) {
+        ft.download(geoserverUrl, overlayPath, function(entry) {
+          $http.get(geonodeUrl)
+          .success(function (data) {
+            $timeout(function () {
+              $scope.overlayDate = data.date.replace('T', ' ');
+              window.localStorage.setItem('overlayDate', $scope.overlayDate);
+            });
+          });
           addOverlay(entry.toURL());
         }, function(error) {
           console.log('Download error: ' + error.source);

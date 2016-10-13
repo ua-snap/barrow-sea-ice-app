@@ -26,3 +26,17 @@ body {
 .platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) > .title {
   margin-top: 11px;
 }
+
+.bar.bar-light.overlay-date {
+  background-color: transparent;
+  border: none;
+}
+
+.bar.bar-light.overlay-date .title {
+  font-size: 150%;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0px 0px 2px #000;
+  background-color: transparent;
+  border: none;
+}
