@@ -36,21 +36,26 @@ angular.module('starter').controller('MapController', ['$scope',
       var ft = new FileTransfer();
 
       $scope.redownload = function() {
-        delete $scope.map.layers.overlays.seaice;
-        delete $scope.overlayDate;
-        window.resolveLocalFileSystemURL(overlayPath, function(entry) {
-          entry.remove(function () {
-            window.localStorage.removeItem('overlayDate');
-            downloadOverlay();
-          }, function(error) {
-            console.log('Error removing overlay file.');
-            console.log(error);
-          });
-        });
+        if($scope.map.layers.overlays && $scope.map.layers.overlays.seaice) {
+          delete $scope.map.layers.overlays.seaice;
+        }
+
+        if($scope.overlayDate) {
+          delete $scope.overlayDate;
+        }
+
+        window.localStorage.removeItem('overlayDate');
+        downloadOverlay();
       }
 
       window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSystem) {
         overlayPath = fileSystem.root.toURL() + 'overlay.png';
+
+        if($scope.overlayDate === null) {
+          downloadOverlay();
+          return;
+        }
+
         window.resolveLocalFileSystemURL(overlayPath, function(entry) {
             addOverlay(entry.toURL());
           }, function() {
